@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Highway Survival - Select Car</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="car-select">
+        <div class="menu-title"><div style="color: yellow;">HIGHWAY SURVIVAL</div></div>
+        <div class="menu-title"><div style="font-size: 40px;">Choose You Car</div></div>
+        <div class="cards-container">
+            
+            <div class="car-card" onclick="selectCar('mobil.glb')">
+                <img src="img/lambo.png" class="car-image" alt="Aventador">
+                <div class="car-name">AVENTADOR</div>
+            </div>
+
+            <div class="car-card" onclick="selectCar('mobil2.glb')">
+                <img src="img/rx-7.png" class="car-image" alt="RX-7">
+                <div class="car-name">MAZDA RX-7</div>
+            </div>
+
+            <div class="car-card" onclick="selectCar('mobil3.glb')">
+                <img src="img/trueno.png" class="car-image" alt="Trueno">
+                <div class="car-name">TRUENO AE86</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="hud">
+        Health Point: <span id="nyawa">❤️❤️❤️</span><br>
+        Score: <span id="skor">0</span>
+    </div>
+    
+    <div id="countdown">3</div>
+    
+    <div id="pause-menu">
+        PAUSED<br>
+        <div style="font-size: 20px; margin-top: 10px; font-family: sans-serif; color: #aaa;">Tekan 'P' untuk Lanjut</div>
+    </div>
+
+    <div id="game-over">
+        CRASHED!<br>
+        <button class="btn-restart" onclick="location.reload()">RETRY</button>
+    </div>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>
