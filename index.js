@@ -465,9 +465,9 @@ function animate() {
             e.hasPassed = true;
 
             // Leveling
-            const newLevel = Math.floor(score / 50);
+            const newLevel = Math.floor(score / 30);
             if (baseSpeedLevel < 1.5) {
-                baseSpeedLevel += 0.012;
+                baseSpeedLevel += 0.05;
                 updateTotalSpeed();
             }
         }
