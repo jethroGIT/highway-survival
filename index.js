@@ -40,7 +40,7 @@ grass.rotation.x = -Math.PI / 2;
 grass.position.z = -400;
 grass.position.y = -0.1;
 grass.receiveShadow = true;
-scene.add(grass);   
+scene.add(grass);
 
 // MARKA JALAN
 const roadLines = [];
@@ -87,9 +87,9 @@ let score = 0;
 let lives = 3;
 
 // --- SETTINGAN KECEPATAN (DIPERCEPAT) ---
-let baseSpeedLevel = 0.5; 
-let speedBoost = 0;      
-let totalSpeed = 0.5;    
+let baseSpeedLevel = 0.5;
+let speedBoost = 0;
+let totalSpeed = 0.5;
 
 let activePowerup = null;
 let powerupEndTime = 0;
@@ -153,7 +153,7 @@ if (!elInfo) {
    5. RESET & SELECT CAR
 ================================================= */
 window.selectCar = (file) => {
-    if(elCarSelect) elCarSelect.style.display = "none";
+    if (elCarSelect) elCarSelect.style.display = "none";
     resetGame();
     loadPlayer(file);
 };
@@ -167,7 +167,7 @@ function resetGame() {
     lives = 3;
     currentLane = 0;
     targetX = 0;
-    
+
     // Reset Speed
     baseSpeedLevel = 0.5;
     speedBoost = 0;
@@ -178,13 +178,13 @@ function resetGame() {
     isPaused = false;
     isGameOver = false;
 
-    if(elSkor) elSkor.innerText = "0";
-    if(elNyawa) elNyawa.innerText = "❤️❤️❤️";
-    if(elGameOver) elGameOver.style.display = "none";
-    
+    if (elSkor) elSkor.innerText = "0";
+    if (elNyawa) elNyawa.innerText = "❤️❤️❤️";
+    if (elGameOver) elGameOver.style.display = "none";
+
     // Reset Kamera
     camera.position.set(0, 5, 12);
-    camera.rotation.z = 0; 
+    camera.rotation.z = 0;
 }
 
 function updateTotalSpeed() {
@@ -209,7 +209,7 @@ function loadPlayer(file) {
         player.scale.setScalar(2 / Math.max(size.x, size.y, size.z));
         player.position.set(0, 0, 0);
         player.rotation.y = Math.PI;
-        player.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; }});
+        player.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
         scene.add(player);
         checkReady();
     });
@@ -221,7 +221,7 @@ function loadEnemyTemplate() {
         const box = new THREE.Box3().setFromObject(enemyTemplate);
         const size = new THREE.Vector3(); box.getSize(size);
         enemyTemplate.scale.setScalar(2 / Math.max(size.x, size.y, size.z));
-        enemyTemplate.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; }});
+        enemyTemplate.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
         checkReady();
     });
 }
@@ -232,7 +232,7 @@ function loadGiftTemplate() {
         const box = new THREE.Box3().setFromObject(giftTemplate);
         const size = new THREE.Vector3(); box.getSize(size);
         giftTemplate.scale.setScalar(1.5 / Math.max(size.x, size.y, size.z));
-        giftTemplate.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; }});
+        giftTemplate.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
         checkReady();
     }, undefined, (err) => {
         console.error("Gagal load gift.glb", err);
@@ -255,24 +255,24 @@ loadGiftTemplate();
 ================================================= */
 function startCountdown() {
     let c = 3;
-    if(elCountdown) { 
-        elCountdown.style.display = "block"; 
-        elCountdown.style.color = "yellow"; 
-        elCountdown.innerText = c; 
+    if (elCountdown) {
+        elCountdown.style.display = "block";
+        elCountdown.style.color = "yellow";
+        elCountdown.innerText = c;
     }
     const t = setInterval(() => {
         c--;
         if (c > 0) {
             elCountdown.innerText = c;
-        } 
+        }
         else if (c === 0) {
             elCountdown.innerText = "GO!";
-            elCountdown.style.color = "#00ff00"; 
-        } 
-        else { 
-            clearInterval(t); 
-            elCountdown.style.display = "none"; 
-            isGameRunning = true; 
+            elCountdown.style.color = "#00ff00";
+        }
+        else {
+            clearInterval(t);
+            elCountdown.style.display = "none";
+            isGameRunning = true;
         }
     }, 1000);
 }
@@ -282,14 +282,14 @@ setInterval(() => {
     if (!isGameRunning || isPaused || isGameOver || !enemyTemplate) return;
     const e = enemyTemplate.clone();
     e.position.set((Math.floor(Math.random() * 3) - 1) * 2, 0.5, -80);
-    e.rotation.y = 0; 
-    
+    e.rotation.y = 0;
+
     // Properti untuk menandai apakah sudah dilewati (untuk skor)
-    e.hasPassed = false; 
+    e.hasPassed = false;
 
     scene.add(e);
     enemies.push(e);
-}, 1300); 
+}, 1300);
 
 // SPAWN POWERUP
 setInterval(() => {
@@ -298,15 +298,49 @@ setInterval(() => {
     p.position.set((Math.floor(Math.random() * 3) - 1) * 2, 1, -100);
     scene.add(p);
     powerups.push(p);
-}, 10000); 
+}, 10000);
 
 /* =================================================
    8. INPUT
 ================================================= */
+// --- FITUR SWAPPED (POSISI MOBIL PINDAH JALUR MENGGUNAKAN SWAP) START ---
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+}, false);
+
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, false);
+
+function handleSwipe() {
+    if (!isGameRunning || isPaused) return; // Hanya jalankan jika game sedang aktif
+
+    const swipeThreshold = 50; // Jarak minimal untuk dianggap swipe
+    if (touchEndX < touchStartX - swipeThreshold) {
+        // Swipe Kiri
+        if (currentLane > -1) {
+            currentLane--;
+            targetX = currentLane * 2;
+        }
+    }
+    if (touchEndX > touchStartX + swipeThreshold) {
+        // Swipe Kanan
+        if (currentLane < 1) {
+            currentLane++;
+            targetX = currentLane * 2;
+        }
+    }
+}
+// --- FITUR SWAPPED END ---
+
 document.addEventListener("keydown", e => {
     if (e.key.toLowerCase() === "p" && isGameRunning) {
         isPaused = !isPaused;
-        if(elPause) elPause.style.display = isPaused ? "block" : "none";
+        if (elPause) elPause.style.display = isPaused ? "block" : "none";
     }
     if (!isPaused && isGameRunning) {
         if (e.key === "ArrowLeft" && currentLane > -1) currentLane--;
@@ -336,13 +370,13 @@ function animate() {
     // --- PLAYER ANIMATION (KEMBALI KE STANDAR) ---
     if (player) {
         const deltaX = targetX - player.position.x;
-        
+
         // Gerakan
-        player.position.x += deltaX * 0.15; 
+        player.position.x += deltaX * 0.15;
 
         // Rotasi Belok (Subtle / Tidak Dramatis)
-        player.rotation.y = Math.PI - (deltaX * 0.1); 
-        
+        player.rotation.y = Math.PI - (deltaX * 0.1);
+
         // Body Roll (Sedikit saja)
         player.rotation.z = (deltaX * 0.05);
 
@@ -357,24 +391,24 @@ function animate() {
     // --- POWERUP LOGIC ---
     powerups.forEach((p, index) => {
         p.position.z += totalSpeed;
-        p.rotation.y += 0.05; 
+        p.rotation.y += 0.05;
         p.position.y = 1 + Math.sin(Date.now() * 0.005) * 0.2;
 
         if (player && Math.abs(p.position.z - player.position.z) < 3.0 && Math.abs(p.position.x - player.position.x) < 1.2) {
             if (Math.random() > 0.5) {
                 activePowerup = 'speed';
-                speedBoost = 0.6; 
-                showNotif("⚡ SPEED BOOST! (5s)", "#ffff00"); 
-                powerupEndTime = Date.now() + 5000; 
+                speedBoost = 0.6;
+                showNotif("⚡ SPEED BOOST! (5s)", "#ffff00");
+                powerupEndTime = Date.now() + 5000;
             } else {
                 activePowerup = 'shield';
-                showNotif("🛡️ SHIELD ACTIVE! (10s)", "#00ffff"); 
-                powerupEndTime = Date.now() + 10000; 
+                showNotif("🛡️ SHIELD ACTIVE! (10s)", "#00ffff");
+                powerupEndTime = Date.now() + 10000;
             }
             updateTotalSpeed();
             scene.remove(p);
             powerups.splice(index, 1);
-        } 
+        }
         else if (p.position.z > 20) { // Hilang di belakang layar
             scene.remove(p);
             powerups.splice(index, 1);
@@ -383,7 +417,7 @@ function animate() {
 
     if (activePowerup && Date.now() > powerupEndTime) {
         activePowerup = null;
-        speedBoost = 0; 
+        speedBoost = 0;
         updateTotalSpeed();
     }
 
@@ -395,19 +429,19 @@ function animate() {
 
         // 1. CEK TABRAKAN
         if (player && Math.abs(e.position.z - player.position.z) < 2.5 && Math.abs(e.position.x - player.position.x) < 0.8) {
-            
+
             if (activePowerup === 'shield') {
                 scene.remove(e);
                 enemies.splice(i, 1);
                 showNotif("🛡️ BLOCKED!", "#00ffff");
-                camera.position.y = 5.5; 
+                camera.position.y = 5.5;
                 setTimeout(() => { camera.position.y = 5; }, 50);
                 continue;
             }
 
             lives--;
-            if(elNyawa) elNyawa.innerText = "❤️".repeat(Math.max(0, lives));
-            
+            if (elNyawa) elNyawa.innerText = "❤️".repeat(Math.max(0, lives));
+
             camera.position.x = (Math.random() - 0.5) * 3.0;
             camera.position.y = 5 + (Math.random() - 0.5) * 1.5;
             setTimeout(() => { camera.position.x = 0; camera.position.y = 5; }, 80);
@@ -417,23 +451,23 @@ function animate() {
 
             if (lives <= 0) {
                 isGameOver = true;
-                if(elGameOver) elGameOver.style.display = "block";
+                if (elGameOver) elGameOver.style.display = "block";
             }
-        } 
-        
+        }
+
         // 2. CEK SKOR (Hanya tambah skor, JANGAN HAPUS MOBIL)
         // Gunakan flag 'hasPassed' agar skor tidak bertambah berkali-kali
         else if (e.position.z > player.position.z + 2 && !e.hasPassed) {
             score += 10;
-            if(elSkor) elSkor.innerText = score;
-            
+            if (elSkor) elSkor.innerText = score;
+
             // Tandai sudah lewat
             e.hasPassed = true;
 
             // Leveling
             const newLevel = Math.floor(score / 50);
-            if (baseSpeedLevel < 1.5) { 
-                baseSpeedLevel += 0.012; 
+            if (baseSpeedLevel < 1.5) {
+                baseSpeedLevel += 0.012;
                 updateTotalSpeed();
             }
         }
