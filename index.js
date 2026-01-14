@@ -303,7 +303,7 @@ setInterval(() => {
 /* =================================================
    8. INPUT
 ================================================= */
-// --- FITUR SWAPPED (POSISI MOBIL PINDAH JALUR MENGGUNAKAN SWAP) START ---
+// --- FITUR SWAPPED (POSISI MOBIL PINDAH JALUR MENGGUNAKAN SWAP) START --- (Pake AI)
 let touchStartX = 0;
 let touchEndX = 0;
 
